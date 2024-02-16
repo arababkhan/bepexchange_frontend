@@ -10,16 +10,18 @@ import { Others } from '../components/admin/Others'
 import { AppContext } from '../contexts';
 import { notifyError, notifySuccess } from '../services/NotificationService'
 import { fonts } from '../styles/variables'
-import { useGetBuyPrice, useGetSellPrice, useGetFeeProfit, useGetNetProfit, useSetBuyPrice, useSetSellPrice, useWithdrawFeeProfit, useWithdrawNetProfit } from '../hooks/useTransactions'
+import { useGetRole, useGetBuyPrice, useGetSellPrice, useGetFeeProfit, useGetNetProfit, useSetBuyPrice, useSetSellPrice, useWithdrawFeeProfit, useWithdrawNetProfit } from '../hooks/useTransactions'
+import {parseBigNumberToFloat} from '../services/UtilService';
 
 const { Title } = Typography
 const { TabPane } = Tabs
 
 export default function AdminPage() {
-  const {chainId} = useWeb3React()
+  const {account, chainId} = useWeb3React()
   const switchChain = useSwitchChain();
   const { user } = useContext(AppContext)
   const navigate = useNavigate()
+  const getRole = useGetRole();
   const getBuyPrice = useGetBuyPrice();
   const getSellPrice = useGetSellPrice();
   const getNetBalance = useGetNetProfit();
@@ -39,23 +41,26 @@ export default function AdminPage() {
       switchChain(97);
 
     const getInitValues = async() => {
+      let w_role = await getRole(account || '');
+      let w_pRole = parseBigNumberToFloat(w_role, 0);
+      if (!w_pRole) {
+        notifyError('You do not have permission!')
+        navigate("/")
+      } 
+
       let w_buyPrice = await getBuyPrice();
       let w_sellPrice = await getSellPrice();
       let w_netBalance = await getNetBalance();
       let w_feeBalance = await getFeeBalance();
+      
       setBuyPrice(w_buyPrice);
       setSellPrice(w_sellPrice);
       setNetBalance(w_netBalance);
       setFeeBalance(w_feeBalance);
     }
 
-    if (!user.role) {
-      notifyError('You do not have permission!')
-      navigate("/")
-    } else if(user.role === 1 || user.role === 3){
-      getInitValues();
-    }
-  }, [user.account])
+    getInitValues();
+  }, [account, chainId])
 
   const handleSetBuyPrice = async () => {
     let w_res = await setConBuyPrice(buyPrice);
