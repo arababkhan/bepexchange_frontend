@@ -71,8 +71,8 @@ const S = {
     `,
     Logo: styled(NavLink)`
         background: url(/logo/logo.png);
-        height: 37px;
-        width: 60px;
+        height: 45px;
+        width: 100px;
         background-size: 100% 100%;
         margin: 23px 0 0 15px;
     `,
