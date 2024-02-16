@@ -4,7 +4,7 @@ import { makeVar, ReactiveVar } from '@apollo/client'
 export enum TransactionType {
   setbuyprice = 'setbuyprice', setsellprice = 'setsellprice', approve = 'approve', withdraw = 'withdraw', 
   addAdmin='addAdmin', deleteAdmin='deleteAdmin', setFeeWithdrawAddress='setFeeWithdrawAddress', 
-  setSellFee='setSellFee', setBuyFee='setBuyFee', setEnableSell='setEnableSell', send='send', deposit='deposit'
+  setSellFee='setSellFee', setBuyFee='setBuyFee', setEnableSell='setEnableSell', send='send', deposit='deposit', setSuperadmin='setSuperadmin'
 }
 
 export type Transaction = {

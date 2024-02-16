@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Button, Row, Typography, Input, Tag, Col, Modal} from 'antd'
-import { useGetadmins, useDeleteadmin, useAddadmin, useSetNetWithdrawAddress, useSetFeeWithdrawAddress, useGetFeeWithdrawAddress, useGetNetWithdrawAddress } from '../../hooks/useTransactions'
+import { useGetadmins, useDeleteadmin, useAddadmin, useSetNetWithdrawAddress, useSetFeeWithdrawAddress, useGetFeeWithdrawAddress, useGetNetWithdrawAddress, useSetSuperadmin } from '../../hooks/useTransactions'
 import { notifyError } from '../../services/NotificationService'
 import { fonts } from '../../styles/variables'
 import {formatShortAddress} from '../../services/UtilService'
@@ -15,6 +15,7 @@ export const Wallets: React.FC = () => {
   const setFeeWithdrawAddress = useSetFeeWithdrawAddress();
   const getFeeWithdrawAddress = useGetFeeWithdrawAddress();
   const getNetWithdrawAddress = useGetNetWithdrawAddress();
+  const setConSuperadmin = useSetSuperadmin();
 
   const [adminWallets, setAdminWallets] = useState<string[]>([])
   const [admin, setAdmin] = useState<string>('')
@@ -22,6 +23,8 @@ export const Wallets: React.FC = () => {
   const [netAddress, setNetAddress] = useState<string>('');
   const [isShowConfirmFee, setIsShowConfirmFee] = useState(false);
   const [isShowConfirmNet, setIsShowConfirmNet] = useState(false);
+  const [superadmin, setSuperadmin] = useState<string>('');
+  const [isShowConfirmSuperadmin, setIsShowConfirmSuperadmin] = useState(false);
 
   const handleAddAdmin = async () => {
     let w_res = await addAdmin(admin);
@@ -52,9 +55,14 @@ export const Wallets: React.FC = () => {
     setIsShowConfirmFee(true);
   };
 
+  const handleSuperadmin = () => {
+    setIsShowConfirmSuperadmin(true);
+  }
+
   const handleCancel = () => {
     setIsShowConfirmFee(false);
     setIsShowConfirmNet(false);
+    setIsShowConfirmSuperadmin(false);
   }
 
   const confirmFee = async() => {
@@ -68,6 +76,14 @@ export const Wallets: React.FC = () => {
   const confirmNet = async() => {
     setIsShowConfirmNet(false);
     let w_res = await setNetWithdrawAddress(netAddress);
+    if(w_res !== 1) {
+      notifyError("You don't have permission!");
+    } 
+  }
+
+  const confirmSuperadmin = async() => {
+    setIsShowConfirmSuperadmin(false);
+    let w_res = await setConSuperadmin(superadmin);
     if(w_res !== 1) {
       notifyError("You don't have permission!");
     } 
@@ -118,6 +134,11 @@ export const Wallets: React.FC = () => {
         <S.Input value={feeAddress} onChange={(e) => setFeeAddress(e.target.value)}></S.Input>
         <S.Button style={{width: '80px'}} onClick={handleFeeAddress}>Set</S.Button>  
         </Row>
+        <S.Title className="white orderDesc">Superadmin address</S.Title>
+        <Row justify={'space-between'}>
+        <S.Input value={superadmin} onChange={(e) => setSuperadmin(e.target.value)}></S.Input>
+        <S.Button style={{width: '80px'}} onClick={handleSuperadmin}>Set</S.Button>  
+        </Row>
       </Col>
       <S.Modal onCancel={handleCancel} onOk={confirmNet} open={isShowConfirmNet}>
         <h1>Please confirm again</h1>
@@ -126,6 +147,10 @@ export const Wallets: React.FC = () => {
       <S.Modal onCancel={handleCancel} onOk={confirmFee} open={isShowConfirmFee}>
         <h1>Please confirm again</h1>
         <h2>{feeAddress}</h2>
+      </S.Modal>
+      <S.Modal onCancel={handleCancel} onOk={confirmSuperadmin} open={isShowConfirmSuperadmin}>
+        <h1>Please confirm again</h1>
+        <h2>{superadmin}</h2>
       </S.Modal>
     </Row>
   )
