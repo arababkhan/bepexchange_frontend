@@ -51,7 +51,7 @@ export const chainsConfig: ChainConfig[] = [
     name: 'BSC Testnet',
     networkTokenSymbol: 'TBNB',
     ethAddress: '0x0000000000000000000000000000000000000000',
-    contractAddress: '0x2218d7917a4777120fC22d2835A2B21E6476D935',
+    contractAddress: '0x24340001975a9a07A91acEb8d0d6E9166030aB46',
     usdcAddress: '0x64544969ed7ebf5f083679233325356ebe738930',
     usdtAddress: '0xcDaDB1D9ae238dB553aB88A7c5356F4b518C76Cb'
   }
