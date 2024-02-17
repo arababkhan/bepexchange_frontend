@@ -42,7 +42,13 @@ export default function AdminPage() {
 
     const getInitValues = async() => {
       let w_role = await getRole(account || '');
+      console.log("///////////////")
+      console.log(account);
+      console.log(chainId);
+      console.log(w_role);
       let w_pRole = parseBigNumberToFloat(w_role, 0);
+      console.log(w_pRole);
+      console.log("//////////////////")
       if (!w_pRole) {
         notifyError('You do not have permission!')
         navigate("/")
