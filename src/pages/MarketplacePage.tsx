@@ -35,8 +35,8 @@ export default function MarketplacePage() {
   const [enableSell, setEnableSell] = useState(false);
   
   useEffect(() => {
-    if(chainId !== 56 && chainId !== 97)
-      switchChain(97);
+    if(chainId !== 56)
+      switchChain(56);
 
     const getInitValues = async() => {
       let w_buyPrice = await getBuyPrice();

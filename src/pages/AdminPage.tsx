@@ -1,5 +1,5 @@
 import { Button, InputNumber, Row, Col, Typography, Tabs, Modal } from 'antd'
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
@@ -7,7 +7,6 @@ import { useSwitchChain } from '../hooks/useSwitchChain'
 import { DefaultPageTemplate } from './template/DefaultPageTemplate'
 import { Wallets } from '../components/admin/Wallets'
 import { Others } from '../components/admin/Others'
-import { AppContext } from '../contexts';
 import { notifyError, notifySuccess } from '../services/NotificationService'
 import { fonts } from '../styles/variables'
 import { useGetRole, useGetBuyPrice, useGetSellPrice, useGetFeeProfit, useGetNetProfit, useSetBuyPrice, useSetSellPrice, useWithdrawFeeProfit, useWithdrawNetProfit } from '../hooks/useTransactions'
@@ -19,7 +18,6 @@ const { TabPane } = Tabs
 export default function AdminPage() {
   const {account, chainId} = useWeb3React()
   const switchChain = useSwitchChain();
-  const { user } = useContext(AppContext)
   const navigate = useNavigate()
   const getRole = useGetRole();
   const getBuyPrice = useGetBuyPrice();
@@ -35,20 +33,15 @@ export default function AdminPage() {
   const [buyPrice, setBuyPrice] = useState(0);
   const [netBalance, setNetBalance] = useState(0)
   const [feeBalance, setFeeBalance] = useState(0)
+  const [role, setRole] = useState(0);
 
   useEffect(() => {
-    if(chainId !== 56 && chainId !== 97)
-      switchChain(97);
+    if(chainId !== 56)
+      switchChain(56);
 
     const getInitValues = async() => {
       let w_role = await getRole(account || '');
-      console.log("///////////////")
-      console.log(account);
-      console.log(chainId);
-      console.log(w_role);
       let w_pRole = parseBigNumberToFloat(w_role, 0);
-      console.log(w_pRole);
-      console.log("//////////////////")
       if (!w_pRole) {
         notifyError('You do not have permission!')
         navigate("/")
@@ -63,6 +56,7 @@ export default function AdminPage() {
       setSellPrice(w_sellPrice);
       setNetBalance(w_netBalance);
       setFeeBalance(w_feeBalance);
+      setRole(w_pRole);
     }
 
     getInitValues();
@@ -163,7 +157,7 @@ export default function AdminPage() {
             <InputNumber name="sellprice" value={sellPrice} onChange={handleSellPrice} />
             <S.Button style={{width: '80px'}} onClick={handleSetSellPrice}>Set</S.Button>
           </S.Row>
-          {user.role === 2 && <Row style={{marginTop: '40px'}}>
+          {role === 2 && <Row style={{marginTop: '40px'}}>
             <S.Tabs defaultActiveKey="1">
               <TabPane tab="Wallets" key="1">
                 <Wallets />
